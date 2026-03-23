@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+env:
+  CARGO_TERM_COLOR: always
+  BIN_NAME: imgsquare
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build & Release (Windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Rust
+        run: rustup update stable && rustup default stable
+
+      - name: Build release binary
+        run: cargo build --release --verbose
+
+      - name: Create zip archive
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          New-Item -ItemType Directory -Path staging -Force
+          Copy-Item "target/release/${{ env.BIN_NAME }}.exe" -Destination staging/
+          Copy-Item "docs/README.txt" -Destination staging/
+          Compress-Archive -Path staging/* -DestinationPath "${{ env.BIN_NAME }}-${tag}-windows-x86_64.zip"
+
+      - name: Upload to GitHub Releases
+        uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe
+        with:
+          files: ${{ env.BIN_NAME }}-*.zip
+          generate_release_notes: true

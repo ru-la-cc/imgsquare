@@ -1,5 +1,5 @@
-use clap::{Parser};
 use crate::types::Position;
+use clap::Parser;
 
 #[derive(Parser, Debug)]
 #[command(version, about)]
@@ -20,7 +20,7 @@ pub struct Args {
     pub position: Option<Position>,
 
     /// 切り出す画像の最大幅
-    #[arg(short, long)]
+    #[arg(short, long, value_parser = clap::value_parser!(u32).range(1..))]
     pub size: Option<u32>,
 
     /// 入力画像の幅がsize以下だった場合にその大きさまで拡大するか

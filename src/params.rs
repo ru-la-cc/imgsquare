@@ -60,8 +60,6 @@ impl Params {
             bail!("画像ファイルが指定されていないです")
         } else if params.outdir.is_empty() {
             bail!("出力先のフォルダーを特定できません")
-        } else if params.size <= 0 {
-            bail!("サイズ０は指定できません")
         }
         Ok(params)
     }
